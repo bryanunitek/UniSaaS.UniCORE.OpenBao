@@ -40,6 +40,7 @@ type RunOptions struct {
 	ImageRepo              string
 	ImageTag               string
 	ContainerName          string
+	User                   string
 	Cmd                    []string
 	Entrypoint             []string
 	Env                    []string
@@ -370,6 +371,7 @@ func (d *Runner) Start(ctx context.Context, addSuffix, forceLocalAddr bool) (*St
 	cfg := &container.Config{
 		Hostname: name,
 		Image:    fmt.Sprintf("%s:%s", d.RunOptions.ImageRepo, d.RunOptions.ImageTag),
+		User:     d.RunOptions.User,
 		Env:      d.RunOptions.Env,
 		Cmd:      d.RunOptions.Cmd,
 	}
@@ -882,12 +884,44 @@ func BuildImage(ctx context.Context, api *client.Client, containerfile string, c
 		return nil, fmt.Errorf("failed to build image: %v", err)
 	}
 
-	output, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read image build output: %w", err)
+	var output bytes.Buffer
+	tee := io.TeeReader(resp.Body, &output)
+
+	var buildError error
+	var messages []string
+
+	dec := json.NewDecoder(tee)
+	for {
+		var message map[string]any
+		if err := dec.Decode(&message); err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+
+			return nil, fmt.Errorf("error decoding output from image build: %w", err)
+		}
+
+		if stream, ok := message["stream"]; ok {
+			messages = append(messages, strings.TrimSpace(stream.(string)))
+		}
+
+		if detail, ok := message["errorDetail"]; ok {
+			contents := fmt.Sprintf("[ERROR]: %v", detail)
+			message, ok := detail.(map[string]any)["message"]
+			if ok {
+				contents = fmt.Sprintf("[ERROR]: %v", message.(string))
+			}
+
+			messages = append(messages, contents)
+			buildError = errors.New(contents)
+		}
 	}
 
-	return output, nil
+	if buildError != nil {
+		return nil, fmt.Errorf("error during container image build: %w\n\nbuild messages:\n\t%v\n\n", buildError, strings.Join(messages, "\n\t"))
+	}
+
+	return output.Bytes(), nil
 }
 
 func (d *Runner) CopyTo(c string, destination string, contents BuildContext) error {

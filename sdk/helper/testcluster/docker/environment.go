@@ -740,6 +740,11 @@ func (n *DockerClusterNode) Start(ctx context.Context, opts *DockerClusterOption
 	r, err := dockhelper.NewServiceRunner(dockhelper.RunOptions{
 		ImageRepo: n.ImageRepo,
 		ImageTag:  n.ImageTag,
+		// The alpine build has changed in v2.6.0 to now run as non-root by
+		// default, aligning with UBI images. However, we don't write
+		// /openbao/config with proper permissions, which means we'll attempt
+		// to invoke chown as openbao which will fail.
+		User: "root",
 		// We don't need to run update-ca-certificates in the container, because
 		// we're providing the CA in the raft join call, and otherwise Vault
 		// servers don't talk to one another on the API port.
@@ -1250,12 +1255,9 @@ func (dc *DockerCluster) setupImage(ctx context.Context, opts *DockerClusterOpti
 
 	containerFile := fmt.Sprintf(`
 FROM %s:%s
-COPY bao /bin/bao
+COPY bao /usr/bin/bao
 `, opts.ImageRepo, sourceTag)
 
-	if opts.Root {
-		containerFile += "USER root\n"
-	}
 	if len(opts.Entrypoint) > 0 {
 		containerFile += "COPY entrypoint /usr/local/bin/docker-entrypoint.sh\n"
 	}
@@ -1265,7 +1267,7 @@ COPY bao /bin/bao
 		dockhelper.BuildPullParent(true),
 		dockhelper.BuildTags([]string{opts.ImageRepo + ":" + tag}))
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to build image: %w", err)
 	}
 	dc.builtTags[tag] = struct{}{}
 	return tag, nil

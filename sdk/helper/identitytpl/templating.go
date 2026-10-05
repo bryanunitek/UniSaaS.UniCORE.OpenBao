@@ -20,7 +20,8 @@ var (
 	ErrNoEntityAttachedToToken       = errors.New("string contains entity template directives but no entity was provided")
 	ErrNoGroupsAttachedToToken       = errors.New("string contains groups template directives but no groups were provided")
 	ErrTemplateValueNotFound         = errors.New("no value could be found for one of the template directives")
-	ErrTemplateWildcard              = `template substitution contains forbidden value %q`
+
+	ErrTemplateWildcard = errors.New(`template substitution contains forbidden value`)
 )
 
 const (
@@ -121,7 +122,7 @@ func PopulateString(p PopulateStringInput) (bool, string, error) {
 	case JSONTemplating:
 		p.templateHandler = jsonTemplateHandler
 	default:
-		return false, "", fmt.Errorf("unknown mode %q", p.Mode)
+		return false, "", fmt.Errorf("unknown mode %d", p.Mode)
 	}
 
 	var subst bool
@@ -159,7 +160,7 @@ func PopulateString(p PopulateStringInput) (bool, string, error) {
 				}
 				for _, blocked := range p.BlockedSubstitutions {
 					if strings.Contains(tmplStr, blocked) {
-						return false, "", fmt.Errorf(ErrTemplateWildcard, blocked)
+						return false, "", fmt.Errorf("%w: %q", ErrTemplateWildcard, blocked)
 					}
 				}
 				b.WriteString(tmplStr)

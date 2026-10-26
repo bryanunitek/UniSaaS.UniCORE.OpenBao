@@ -16,9 +16,11 @@ const sidebars: SidebarsConfig = {
         "use-cases",
         "api/index",
         {
-            "Getting Started": ["get-started/developer-qs"],
+            "Getting Started": [
+                "get-started/operator-qs",
+                "get-started/developer-qs"
+            ],
         },
-        "browser-support",
         "install",
         {
             Internals: [
@@ -55,19 +57,6 @@ const sidebars: SidebarsConfig = {
             ],
             Concepts: [
                 "concepts/index",
-                "concepts/dev-server",
-                "concepts/seal",
-                "concepts/lease",
-                "concepts/auth",
-                "concepts/tokens",
-                "concepts/identity",
-                "concepts/oidc-provider",
-                "concepts/profiles",
-                "concepts/response-wrapping",
-                "concepts/policies",
-                "concepts/password-policies",
-                "concepts/username-templating",
-                "concepts/ha",
                 "concepts/storage",
                 {
                     "Integrated Storage": [
@@ -75,19 +64,35 @@ const sidebars: SidebarsConfig = {
                         "concepts/integrated-storage/autopilot",
                     ],
                 },
+                "concepts/seal",
+                "concepts/ha",
+                "concepts/consistency",
+                "concepts/auth",
+                "concepts/tokens",
+                "concepts/lease",
+                "concepts/response-wrapping",
+                "concepts/policies",
+                "concepts/control-groups",
+                "concepts/profiles",
+                "concepts/cel",
+                "concepts/identity",
+                "concepts/oidc-provider",
                 {
                     "Namespaces": [
                         "concepts/namespaces/index",
                         "concepts/namespaces/sealable-namespaces",
                     ]
                 },
-                "concepts/pgp-gpg-keybase",
+                "concepts/external-keys",
+                "concepts/dev-server",
                 "concepts/recovery-mode",
-                "concepts/resource-quotas",
                 "concepts/mount-migration",
-                "concepts/duration-format",
                 "concepts/user-lockout",
-                "concepts/cel",
+                "concepts/resource-quotas",
+                "concepts/password-policies",
+                "concepts/username-templating",
+                "concepts/pgp-gpg-keybase",
+                "concepts/duration-format",
             ],
             Guides: [
                 "guides/migration",
@@ -103,6 +108,11 @@ const sidebars: SidebarsConfig = {
                             ],
                         },
                     ],
+                    Upgrading: [
+                        "guides/upgrade/index",
+                        "guides/upgrade/ha",
+                        "guides/upgrade/plugins",
+                    ],
                 },
             ],
             Configuration: [
@@ -112,6 +122,7 @@ const sidebars: SidebarsConfig = {
                 {
                     listener: [
                         "configuration/listener/index",
+                        "configuration/listener/shared",
                         "configuration/listener/unix",
                         "configuration/listener/tcp",
                     ],
@@ -135,10 +146,10 @@ const sidebars: SidebarsConfig = {
                     ],
                     storage: [
                         "configuration/storage/index",
-                        "configuration/storage/filesystem",
                         "configuration/storage/in-memory",
                         "configuration/storage/raft",
                         "configuration/storage/postgresql",
+                        "configuration/storage/pebbledb",
                     ],
                 },
                 "configuration/plugins",
@@ -230,6 +241,7 @@ const sidebars: SidebarsConfig = {
                         "commands/plugin/info",
                         "commands/plugin/init",
                         "commands/plugin/list",
+                        "commands/plugin/prune",
                         "commands/plugin/register",
                         "commands/plugin/reload",
                     ],
@@ -434,10 +446,10 @@ const sidebars: SidebarsConfig = {
             ],
             Plugins: [
                 "plugins/index",
+                "plugins/plugin-installation",
                 "plugins/plugin-architecture",
                 "plugins/plugin-development",
                 "plugins/plugin-authors-guide",
-                "plugins/plugin-management",
             ],
             Platforms: [
                 "platform/index",
@@ -501,12 +513,8 @@ const sidebars: SidebarsConfig = {
                     ],
                 },
             ],
-            "Upgrade Guides": [
-                "upgrading/index",
-                "upgrading/ha-upgrade",
-                "upgrading/plugins",
-            ],
         },
+        "browser-support",
         "glossary",
     ],
     api: [
@@ -583,7 +591,20 @@ const sidebars: SidebarsConfig = {
                 "api/system/config-cors",
                 "api/system/config-state",
                 "api/system/config-ui",
+                "api/system/control-group",
                 "api/system/decode-token",
+                {
+                    "/sys/external-keys": [
+                        "api/system/external-keys/index",
+                        {
+                            "Plugins": [
+                                "api/system/external-keys/plugins/index",
+                                "api/system/external-keys/plugins/pkcs11",
+                                "api/system/external-keys/plugins/transit",
+                            ],
+                        },
+                    ],
+                },
                 "api/system/generate-recovery-token",
                 "api/system/generate-root-token",
                 "api/system/generate-root",

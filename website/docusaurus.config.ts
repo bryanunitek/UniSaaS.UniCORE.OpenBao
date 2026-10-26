@@ -1,5 +1,6 @@
 import { themes as prismThemes } from "prism-react-renderer";
 import type { Config } from "@docusaurus/types";
+import type { EditUrlFunction } from "@docusaurus/plugin-content-docs";
 import type * as Preset from "@docusaurus/preset-classic";
 import { includeMarkdown } from "@hashicorp/remark-plugins";
 import * as path from "path";
@@ -15,6 +16,15 @@ function getDocVersions() {
     return {
       current: { label: "Development" },
     };
+  }
+}
+
+function getEditUrlFn(dir: string): EditUrlFunction {
+  return (editUrlParams) => {
+    let branch = editUrlParams.version === "current" ?
+      `main` :
+      `release/${editUrlParams.version}`;
+    return `https://github.com/openbao/openbao/blob/${branch}/website/content/${dir}/${editUrlParams.docPath}`;
   }
 }
 
@@ -76,7 +86,7 @@ const config: Config = {
         explicitSearchResultPath: true,
         searchContextByPaths: [
           { label: "Docs", path: "docs" },
-          { label: "API Reference", path: "docs/api" },
+          { label: "Community", path: "community" },
           { label: "Blog", path: "blog" },
         ],
         useAllContextsWithNoSearchContext: true,
@@ -91,7 +101,7 @@ const config: Config = {
           sidebarPath: "./sidebars.ts",
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/openbao/openbao/tree/main/website/",
+          editUrl: getEditUrlFn("docs"),
           beforeDefaultRemarkPlugins: [
             [
               includeMarkdown,
@@ -174,6 +184,19 @@ const config: Config = {
             from: "/api-docs/system/rotate-config",
             to: "/docs/api/system/rotate/keyring-config",
           },
+          // Add unversioned variants of these redirects once 2.7.0 is cut.
+          {
+            from: "/docs/next/upgrading/",
+            to: "/docs/next/guides/upgrade/",
+          },
+          {
+            from: "/docs/next/upgrading/ha-upgrade",
+            to: "/docs/next/guides/upgrade/ha",
+          },
+          {
+            from: "/docs/next/upgrading/plugins-upgrade",
+            to: "/docs/next/guides/upgrade/plugins",
+          },
         ],
         createRedirects(existingPath) {
           if (existingPath.includes('/community/') && existingPath !== '/community/') {
@@ -189,6 +212,10 @@ const config: Config = {
           if (existingPath.includes('/docs/api/')) {
             return [
               existingPath.replace('/docs/api/', '/api-docs/'),
+              existingPath.replace('/docs/next/api/', '/api-docs/next/'),
+              existingPath.replace('/docs/2.6.x/api/', '/api-docs/2.6.x/'),
+              existingPath.replace('/docs/2.5.x/api/', '/api-docs/2.5.x/'),
+              existingPath.replace('/docs/2.4.x/api/', '/api-docs/2.4.x/'),
             ];
           }
 
@@ -266,6 +293,8 @@ const config: Config = {
         `For web site terms of use, trademark policy and other project policies please see <a href="https://lfprojects.org">lfprojects.org</a>. <br>`,
         ` OpenBao is a <a href="https://openssf.org/projects/openbao/">Sandbox project</a> at`,
         `<a href="https://openssf.org/"><img src="/img/openssf-logo.svg" alt="OpenSSF Logo" width="90px"></a>.`,
+        `<br><br>Follow us on social media:<br>`,
+        `<a href="https://linkedin.com/company/openbao" target="_blank">LinkedIn</a> | <a href="https://bsky.app/profile/openbao-official.bsky.social" target="_blank">Bluesky</a> | <a href="https://www.youtube.com/@OpenBao" target="_blank">YouTube</a> | <a href="https://www.instagram.com/openbao.official/" target="_blank">Instagram</a> | <a href="https://www.threads.com/@openbao.official" target="_blank">Threads</a> | <a href="https://github.com/openbao/openbao" target="_blank">GitHub</a>`,
         `<br><br><a href="/sitemap.xml">Sitemap</a>`,
       ].join(" "),
     },

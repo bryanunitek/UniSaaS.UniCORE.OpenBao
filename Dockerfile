@@ -17,7 +17,7 @@ FROM scratch AS bin
 ARG TARGETARCH
 COPY --chmod=555 bin/${TARGETARCH}/bao /usr/bin/bao
 
-# This is {docker.io,quay.io,ghcr.io}/openbao/openbao{,-hsm}.
+# This is {docker.io,quay.io,ghcr.io}/openbao/openbao.
 FROM alpine:3.24.2@sha256:294b683cb724975bec92580e1e685676bd4b50bda910ddb8c51d4cabeaec77e6 AS default
 
 COPY LICENSE /licenses/mozilla.txt
@@ -41,14 +41,6 @@ RUN mkdir -p /openbao/logs && \
     mkdir -p /openbao/config && \
     chown -R openbao:openbao /openbao
 
-# Expose the logs directory as a volume since there's potentially long-running
-# state in there
-VOLUME /openbao/logs
-
-# Expose the file directory as a volume since there's potentially long-running
-# state in there
-VOLUME /openbao/file
-
 # 8200/tcp is the primary interface that applications use to interact with
 # OpenBao.
 EXPOSE 8200
@@ -67,7 +59,7 @@ CMD ["server", "-dev", "-dev-no-store-token"]
 
 
 # This is {docker.io,quay.io,ghcr.io}/openbao/openbao-ubi.
-FROM registry.access.redhat.com/ubi10-minimal:10.2@sha256:204e1531cee54562b107fb31e0b327062fc3d5d67af7cc0d2e66b2c572b9044f AS ubi
+FROM registry.access.redhat.com/ubi10-minimal:10.2@sha256:e3a5632d7ae8a97e06f634522d06187f12793e90ac0d7b51bc671c83a96d8eda AS ubi
 
 COPY LICENSE /licenses/mozilla.txt
 
@@ -101,14 +93,6 @@ RUN mkdir -p /openbao/logs && \
     chown -R openbao /openbao && chown -R openbao $HOME && \
     chgrp -R 0 $HOME && chmod -R g+rwX $HOME && \
     chgrp -R 0 /openbao && chmod -R g+rwX /openbao
-
-# Expose the logs directory as a volume since there's potentially long-running
-# state in there
-VOLUME /openbao/logs
-
-# Expose the file directory as a volume since there's potentially long-running
-# state in there
-VOLUME /openbao/file
 
 # 8200/tcp is the primary interface that applications use to interact with
 # OpenBao.

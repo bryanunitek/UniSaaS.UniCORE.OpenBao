@@ -1,3 +1,0 @@
-```release-note:improvement
-raft: support `auto_join` via DNS `SRV` records
-```

@@ -798,7 +798,7 @@ $ curl \
   --request POST \
   --header "X-Vault-Token: ..." \
   --data '{"no_default_policy": "true"}' \
-  https://openbao.hashicorp.rocks/v1/auth/token/create
+  http://127.0.0.1:8200/v1/auth/token/create
 ```
 
 ### Root policy
@@ -826,7 +826,7 @@ $ curl \
   --request POST \
   --header "X-Vault-Token: ..." \
   --data '{"token": "<token>"}' \
-  https://openbao.hashicorp.rocks/v1/auth/token/revoke
+  http://127.0.0.1:8200/v1/auth/token/revoke
 ```
 
 ## Managing policies
@@ -848,7 +848,7 @@ or via the API:
 ```shell-session
 $ curl \
   --header "X-Vault-Token: ..." \
-  https://openbao.hashicorp.rocks/v1/sys/policy
+  http://127.0.0.1:8200/v1/sys/policy
 ```
 
 :::warning
@@ -875,7 +875,7 @@ $ curl \
   --request POST \
   --header "X-Vault-Token: ..." \
   --data '{"policy":"path \"...\" {...} "}' \
-  https://openbao.hashicorp.rocks/v1/sys/policy/policy-name
+  http://127.0.0.1:8200/v1/sys/policy/policy-name
 ```
 
 In both examples, the name of the policy is "policy-name". You can think of this
@@ -899,7 +899,7 @@ $ curl \
   --request POST \
   --header "X-Vault-Token: ..." \
   --data '{"policy":"path \"...\" {...} "}' \
-  https://openbao.hashicorp.rocks/v1/sys/policy/my-existing-policy
+  http://127.0.0.1:8200/v1/sys/policy/my-existing-policy
 ```
 
 ### Deleting policies
@@ -916,7 +916,7 @@ or via the API:
 $ curl \
   --request DELETE \
   --header "X-Vault-Token: ..." \
-  https://openbao.hashicorp.rocks/v1/sys/policy/policy-name
+  http://127.0.0.1:8200/v1/sys/policy/policy-name
 ```
 
 This is an idempotent operation. OpenBao will not return an error when deleting a

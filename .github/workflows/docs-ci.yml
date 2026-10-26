@@ -10,13 +10,16 @@ on:
       - "website/**"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   check-links:
     name: Check Absolute Links
     runs-on: ubuntu-slim
 
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Find absolute links
         run: |
           echo "Checking for absolute links in website/content/docs/..."
@@ -31,9 +34,12 @@ jobs:
   test-docs:
     name: Test Docs
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
           package_json_file: website/package.json
           cache: true
@@ -52,8 +58,8 @@ jobs:
     name: Lint Docs
     runs-on: ubuntu-slim
     steps:
-      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-      - uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
         with:
           package_json_file: website/package.json
           cache: true
